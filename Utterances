@@ -1,0 +1,8 @@
+GetDownTempIntent get the temperature downstairs
+GetDownTempIntent get the downstairs temperature
+GetDownTempIntent what's the temperature downstairs
+GetDownTempIntent what's the downstairs temperature
+GetDownTempIntent what the temperature is downstairs
+TurnOnIntent turn on
+SetDownTempFRACIntent Set the downstairs temperature to {DownSetInt} point {DownSetFrac} degrees
+SetDownTempFRACIntent Set the temperature downstairs to {DownSetInt} point {DownSetFrac} degrees
