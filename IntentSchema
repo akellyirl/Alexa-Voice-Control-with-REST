@@ -1,0 +1,23 @@
+{
+  "intents": [
+    {
+      "intent": "GetDownTempIntent"
+    },
+    {
+      "intent": "TurnOnIntent"
+    },
+    {
+      "intent": "SetDownTempFRACIntent",
+      "slots": [
+        {
+        "name": "DownSetInt",
+        "type": "AMAZON.NUMBER"
+        },
+        {
+        "name": "DownSetFrac",
+        "type": "AMAZON.NUMBER"
+        }
+      ]
+    }
+  ]
+}
