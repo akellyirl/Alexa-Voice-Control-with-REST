@@ -79,11 +79,50 @@ function onIntent(intentRequest, session, callback) {
     if ("GetDownTempIntent" === intentName) {
         GetDownTemp(intent, session, callback);
     }
+    else if ("GetUpTempIntent" === intentName) {
+        GetUpTemp(intent, session, callback);
+    }
+    else if ("GetOutTempIntent" === intentName) {
+        GetOutTemp(intent, session, callback);
+    }
+    else if ("GetWaterTempIntent" === intentName) {
+        GetWaterTemp(intent, session, callback);
+    }
+    else if ("GetStatusIntent" === intentName) {
+        GetStatus(intent, session, callback);
+    }
+    else if ("GetDownSetIntent" === intentName) {
+        GetDownSet(intent, session, callback);
+    }
+    else if ("GetUpSetIntent" === intentName) {
+        GetUpSet(intent, session, callback);
+    }
     else if ("TurnOnIntent" === intentName) {
         TurnOn(intent, session, callback);
     }
+    else if ("TurnOffIntent" === intentName) {
+        TurnOff(intent, session, callback);
+    }
+    else if ("HeatWaterIntent" === intentName) {
+        HeatWater(intent, session, callback);
+    }
+    else if ("HeatWaterBathIntent" === intentName) {
+        HeatWaterBath(intent, session, callback);
+    }
     else if ("SetDownTempFRACIntent" === intentName) {
         SetDownTempFRAC(intent, session, callback);
+    }
+    else if ("SetDownTempINTIntent" === intentName) {
+        SetDownTempINT(intent, session, callback);
+    }
+    else if ("SetUpTempFRACIntent" === intentName) {
+        SetUpTempFRAC(intent, session, callback);
+    }
+    else if ("SetUpTempINTIntent" === intentName) {
+        SetUpTempINT(intent, session, callback);
+    }
+    else if ("HelpIntent" === intentName) {
+        getWelcomeResponse(callback);
     }else{
         throw "Invalid intent";
     }
@@ -129,13 +168,119 @@ function GetDownTemp(intent,session,callback){
     GET("tempDOWN",function(response) {    
     var speechOutput = "The down stairs temperature is "+response/10+" degrees";
     
-    var shouldEndSession = true;
+    var shouldEndSession = false;
     
     callback(sessionAttributes,
              buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
     });
 }
 
+function GetUpTemp(intent,session,callback){
+    var sessionAttributes = {};
+    var cardTitle = "GetUpTemp";
+    var repromptText=null;
+    
+    GET("tempUP",function(response) {    
+    var speechOutput = "The up stairs temperature is "+response/10+" degrees";
+    
+    var shouldEndSession = false;
+    
+    callback(sessionAttributes,
+             buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+    });
+}
+
+function GetOutTemp(intent,session,callback){
+    var sessionAttributes = {};
+    var cardTitle = "GetOUTTemp";
+    var repromptText=null;
+    
+    GET("tempOUT",function(response) {    
+    var speechOutput = "The outside temperature is "+response/10+" degrees";
+    
+    var shouldEndSession = false;
+    
+    callback(sessionAttributes,
+             buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+    });
+}
+
+function GetWaterTemp(intent,session,callback){
+    var sessionAttributes = {};
+    var cardTitle = "GetWaterTemp";
+    var repromptText=null;
+    
+    GET("tempWATER",function(response) { 
+        var waterInfo = "";
+        if(response>500){
+            waterInfo = "hot enough for a bath."
+        } else if(response>350){
+            waterInfo = "hot enough for a shower, but not hot enough for a bath."
+        } else {
+            waterInfo = "not hot enough for a shower or a bath."
+        }
+        var speechOutput = "The water temperature is "+response/10+" degrees.\
+        The water is "+waterInfo;
+    
+        var shouldEndSession = false;
+    
+        callback(sessionAttributes,
+             buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+    });
+}
+
+function GetStatus(intent,session,callback){
+    var sessionAttributes = {};
+    var cardTitle = "GetStatus";
+    var repromptText=null;
+    
+    GET("State",function(response) {  
+        var stateInfo="";
+        switch(response){
+        case 0: stateInfo = "Heating is Off."; break;
+        case 1: stateInfo = "Heating is On." ; break;
+        case 2: stateInfo = "Heating is Off."; break;
+        case 3: stateInfo = "Water is Heating for a Shower."; break;
+        case 4: stateInfo = "Water is Heating for a Bath."
+        }
+        var speechOutput = "The "+stateInfo;
+        
+        var shouldEndSession = false;
+        
+        callback(sessionAttributes,
+                 buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+    });
+}
+
+function GetDownSet(intent,session,callback){
+    var sessionAttributes = {};
+    var cardTitle = "GetDownSet";
+    var repromptText=null;
+    
+    GET("Setpoint",function(response) {    
+    var speechOutput = "The downstairs setpoint is "+response/10+" degrees";
+    
+    var shouldEndSession = false;
+    
+    callback(sessionAttributes,
+             buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+    });
+}
+
+function GetUpSet(intent,session,callback){
+    var sessionAttributes = {};
+    var cardTitle = "GetDownSet";
+    var repromptText=null;
+    
+    GET("SetpointUP",function(response) {    
+    var speechOutput = "The upstairs setpoint is "+response/10+" degrees";
+    
+    var shouldEndSession = false;
+    
+    callback(sessionAttributes,
+             buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+    });
+}
 
 function TurnOn(intent,session,callback){
     var sessionAttributes = {};
@@ -156,6 +301,62 @@ function TurnOn(intent,session,callback){
     });
 }
 
+function TurnOff(intent,session,callback){
+    var sessionAttributes = {};
+    var cardTitle = "TurnOff";
+    var repromptText=null;
+    
+    POST("STATE:0",function(response) {   
+        if (response==1) {
+            var speechOutput = "I've turned the heating off.";
+        } else {
+            var speechOutput = "I'm sorry. The heating has returned an error. I can't turn it off.";
+        }
+    
+    var shouldEndSession = true;
+    
+    callback(sessionAttributes,
+             buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+    });
+}
+
+function HeatWater(intent,session,callback){
+    var sessionAttributes = {};
+    var cardTitle = "HeatWater";
+    var repromptText=null;
+    
+    POST("STATE:3",function(response) {   
+        if (response==1) {
+            var speechOutput = "I've started to heat the water.";
+        } else {
+            var speechOutput = "I'm sorry. The heating has returned an error. I can't heat the water.";
+        }
+    
+    var shouldEndSession = true;
+    
+    callback(sessionAttributes,
+             buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+    });
+}
+
+function HeatWaterBath(intent,session,callback){
+    var sessionAttributes = {};
+    var cardTitle = "HeatWater";
+    var repromptText=null;
+    
+    POST("STATE:4",function(response) {   
+        if (response==1) {
+            var speechOutput = "I've started to heat the water for a bath.";
+        } else {
+            var speechOutput = "I'm sorry. The heating has returned an error. I can't heat the water.";
+        }
+    
+    var shouldEndSession = true;
+    
+    callback(sessionAttributes,
+             buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+    });
+}
 
 function SetDownTempFRAC(intent,session,callback){
     var sessionAttributes = {};
@@ -177,13 +378,70 @@ function SetDownTempFRAC(intent,session,callback){
     });
 }
 
+function SetDownTempINT(intent,session,callback){
+    var sessionAttributes = {};
+    var cardTitle = "SetDownTemp";
+    var repromptText=null;
+    
+    POST("SETDOWN:"+intent.slots.DownSetInt.value+".0", function(response) {   
+        if (response==1) {
+            var speechOutput = "I've set the downstairs temperature to "+intent.slots.DownSetInt.value+" degrees.";
+        } else {
+            var speechOutput = "I'm sorry. The heating has returned an error.";
+        }
+    
+    var shouldEndSession = true;
+    
+    callback(sessionAttributes,
+             buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+    });
+}
+
+function SetUpTempFRAC(intent,session,callback){
+    var sessionAttributes = {};
+    var cardTitle = "SetUpTemp";
+    var repromptText=null;
+    
+    POST("SETUP:"+intent.slots.UpSetInt.value+"."+intent.slots.UpSetFrac.value, function(response) {   
+        if (response==1) {
+            var speechOutput = "I've set the upstairs temperature to \
+"+intent.slots.UpSetInt.value+" point "+intent.slots.UpSetFrac.value+" degrees";
+        } else {
+            var speechOutput = "I'm sorry. The heating has returned an error.";
+        }
+    
+    var shouldEndSession = true;
+    
+    callback(sessionAttributes,
+             buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+    });
+}
+
+function SetUpTempINT(intent,session,callback){
+    var sessionAttributes = {};
+    var cardTitle = "SetDownTemp";
+    var repromptText=null;
+    
+    POST("SETUP:"+intent.slots.UpSetInt.value+".0", function(response) {   
+        if (response==1) {
+            var speechOutput = "I've set the upstairs temperature to "+intent.slots.UpSetInt.value+" degrees.";
+        } else {
+            var speechOutput = "I'm sorry. The heating has returned an error.";
+        }
+    
+    var shouldEndSession = true;
+    
+    callback(sessionAttributes,
+             buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+    });
+}
 
 function GET(cmd,response) {
     var https = require('https');
     
-    var url = 'https://api.particle.io/v1/devices/1234fffe/\
+    var url = 'https://api.particle.io/v1/devices/1b1b1b1/\
 '+cmd+'\
-?access_token=dada1234';
+?access_token=3e3e3e3e';
     
     https.get(url, function(res) {
       var body = '';
@@ -200,35 +458,38 @@ function GET(cmd,response) {
 }
 
 function POST(cmd,response) {
+
+    var qs = require("querystring");
     var http = require("https");
 
     var options = {
-      "method": "POST",
-      "hostname": "api.spark.io",
-      "port": null,
-      "path": "/v1/devices/1234fffe/SetVal?access_token=dada1234",
-      "headers": {
-        "content-type": "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW",
-        "cache-control": "no-cache",
-      }
-    };
-    
+  "method": "POST",
+  "hostname": "api.spark.io",
+  "port": null,
+  "path": "/v1/devices/1b1b1b1/SetVal",
+  "headers": {
+    "content-type": "application/x-www-form-urlencoded",
+    "cache-control": "no-cache",
+    "postman-token": "15c6f62d-afde-291f-8dcc-5b1abd7eeec9"
+  }
+};
+
     var req = http.request(options, function (res) {
-      var chunks = [];
-    
-      res.on("data", function (chunk) {
-        chunks.push(chunk);
-      });
-    
-      res.on("end", function () {
+    var chunks = [];
+
+    res.on("data", function (chunk) {
+    chunks.push(chunk);
+  });
+
+    res.on("end", function () {
         var body = Buffer.concat(chunks);
         var jsData = JSON.parse(body);
         response(jsData.return_value);
       });
-    });
-    
-    req.write("------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data;\
- name=\"params\"\r\n\r\n"+cmd+"\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW--");
+});
+
+    req.write(qs.stringify({ access_token: '3e3e3e3e',
+  params: cmd }));
     req.end();
 }
 
@@ -264,3 +525,4 @@ function buildResponse(sessionAttributes, speechletResponse) {
         response: speechletResponse
     }
 }
+
